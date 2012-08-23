@@ -14,9 +14,14 @@ Diaspora::Application.routes.draw do
   resources :status_messages, :only => [:new, :create]
 
   resources :conversations, :only => [:show]
-  post '/posts/:post_id/tags' => 'tags#set'
   post '/conversations/:conversation_id/join' => 'conversations#join'
 
+  post '/posts/:post_id/tags' => 'tags#set'
+  resources :relationships, :only => [:create, :destroy]
+
+  get '/:username/following' => 'relationships#following'
+  get '/:username/followers' => 'relationships#followers'
+  
   resources :posts do
     member do
       get :next
@@ -51,6 +56,10 @@ Diaspora::Application.routes.draw do
   # Streams
   get "latest" => "streams#show", :as => 'latest'
   get "latest/updated" => "streams#updated"
+
+  get 'feed' => 'streams#feed', :as => 'feed'
+
+  get "feed/updated" => "streams#feed_updated", :as => 'feed_updated'
 
   match "stream" => redirect("/latest")
   get "timewarp/:days_ago" => 'streams#show'

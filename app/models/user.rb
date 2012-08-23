@@ -58,10 +58,13 @@ class User < ActiveRecord::Base
   has_many :ignored_people, :through => :blocks, :source => :person
 
   has_many :notifications, :foreign_key => :recipient_id
-
-
+  
   before_save :guard_unconfirmed_email,
               :save_person!
+              
+  after_create do
+    self.person.profile.generate_gravatar_url!
+  end
 
   attr_accessible :getting_started,
                   :password,
@@ -83,6 +86,10 @@ class User < ActiveRecord::Base
         user.email = data[:email]
       end
     end
+  end
+
+  def facebook
+    services.find{|x| x.provider =='facebook'}
   end
 
   def topics_liked(time = 1.week.ago)

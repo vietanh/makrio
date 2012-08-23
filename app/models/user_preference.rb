@@ -10,7 +10,9 @@ class UserPreference < ActiveRecord::Base
    "started_sharing",
    "also_commented",
    "liked",
-    "remixed"]
+    "remixed",
+    'followed',
+    'also_remixed']
 
 
   def must_be_valid_email_type
