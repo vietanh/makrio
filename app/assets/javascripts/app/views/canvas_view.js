@@ -1,14 +1,26 @@
 app.views.Canvas = app.views.InfScroll.extend({
-  scrollOffset : 1000,
+  scrollOffset : 1500,
 
-  initialize: function(){
+  initialize: function(opts){
     this.stream = this.model
     this.collection = this.stream.items
     this.postClass = app.views.Post.CanvasFrame
     this.postViews = []
+    this.onProfilePage = opts.onProfilePage
+
     this.setupInfiniteScroll()
-    this.stream.bind("reLayout", this.reLayout, this)
-    this.stream.bind("fetched", this.addPosts, this)
+    this.bindEvents()
+  },
+
+  bindEvents : function() {
+    this.stream.on("reLayout", this.reLayout, this)
+    this.stream.on("fetched", this.addPosts, this)
+  },
+
+  unbind : function() {
+    this.stream.off("reLayout", this.reLayout)
+    this.stream.off("fetched", this.addPosts)
+    this.unbindInfScroll()
   },
 
   renderTemplate : function() {
@@ -17,7 +29,7 @@ app.views.Canvas = app.views.InfScroll.extend({
         var message
           , person = app.page.model
 
-        if(app.onInterests){
+        if(window.location.pathname.search('/interests') != -1){
           message = "<h2>Makr.io is smart about showing you content you love.</h2> \
                     <h3>This stream is based on content you've liked and content you've created.</h3> \
                     <br> \
@@ -74,11 +86,6 @@ app.views.Canvas = app.views.InfScroll.extend({
         }
       })
     }
-  },
-
-  triggerRelayoutAfterImagesLoaded : function(){
-    //event apparently only fires once
-    this.$el.imagesLoaded(_.bind(this.reLayout, this))
   },
 
   reLayout : function(){

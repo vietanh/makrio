@@ -62,3 +62,4 @@ Diaspora::Application.configure do
   end
 
 end
+

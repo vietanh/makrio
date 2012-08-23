@@ -2,7 +2,7 @@
 #   licensed under the Affero General Public License version 3 or later.  See
 #   the COPYRIGHT file.
 
-%w{conversations staff_picks likes front_page category interests}.each do |filename|
+%w{conversations staff_picks likes front_page category interests feed}.each do |filename|
   require File.join(Rails.root, "lib", "stream", filename)
 end
 
@@ -11,8 +11,9 @@ class StreamsController < ApplicationController
              :mobile,
              :json
 
-  before_filter :set_current_path, :only => [:show, :front_page, :interests]
+  before_filter :set_current_path, :only => [:feed, :show, :front_page, :interests, :likes]
   before_filter :set_getting_started!, :except => [:staff_picks]
+  before_filter :authenticate_user!, :only => [:feed]
 
   def show
     stream_responder do
@@ -39,6 +40,20 @@ class StreamsController < ApplicationController
       scope = @stream.stream_posts
       scope = scope.where('posts.id > ?', params[:last_post_id]) if params[:last_post_id].present?
       @stream_json = PostPresenter.collection_json(scope, current_user, lite?: true, include_root: false)
+    end
+  end
+
+
+  def feed    
+    stream_responder do
+      default_stream(Stream::Feed)
+    end
+  end
+
+  def feed_updated
+    stream_responder do
+      @stream = Stream::Feed.new(current_user, :max_time => max_time)
+      @stream_json =  PostPresenter.collection_json(@stream.stream_posts.where("id > ?", params[:last_post_id]), current_user)
     end
   end
 

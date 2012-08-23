@@ -5,15 +5,25 @@ app.views.StreamInteractions = app.views.Base.extend({
   subviews:{
     ".comments" : "comments",
     ".new-comment" : "newCommentView",
-    "#share-actions" : "shareView"
+    "#share-actions" : "shareView",
+    "#follow-btn-container": "followButtonView"
   },
 
   templateName : "stream-interactions",
+
+  initViews : function() {
+    var author = new app.models.Profile(this.model.get("author"))
+    this.followButtonView = new app.views.FollowButton({
+      model : author,
+      collection: app.page.stream.items
+    })
+  },
 
   setInteractions : function (model) {
     var self = this;
     this.model = model
 
+    this.initViews()
     this.cleanupOldviews()
 
     this.comments = new app.views.PostViewerReactions({ model: model.interactions })

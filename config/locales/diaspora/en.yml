@@ -469,6 +469,14 @@ en:
       few: "%{actors} commented on your %{post_link}."
       many: "%{actors} commented on your %{post_link}."
       other: "%{actors} commented on your %{post_link}."
+
+    also_remixed:
+      zero: "%{actors} also remixed a %{post_link} you have played with."
+      one: "%{actors} also remixed a %{post_link} you have played with."
+      two: "%{actors} also remixed a %{post_link} you have played with."
+      few: "%{actors} also remixed a %{post_link} you have played with."
+      many: "%{actors} also remixed a %{post_link} you have played with."
+      other: "%{actors} also remixed a %{post_link} you have played with."
     also_commented:
       zero: "%{actors} also commented on %{post_author}'s %{post_link}."
       one: "%{actors} also commented on %{post_author}'s %{post_link}."
@@ -583,6 +591,10 @@ en:
         view_post: "View post >"
     remixed:
         remixed: "%{name} remixed your post!"
+        view_post: "Check it out >"
+
+    also_remixed:
+        remixed: "%{name} remixed a post in a conversation you are a part of!"
         view_post: "Check it out >"
     confirm_email:
         subject: "Please activate your new email address %{unconfirmed_email}"
@@ -1059,12 +1071,14 @@ en:
       edit_account: "Edit account"
       receive_email_notifications: "Receive email notifications when..."
       also_commented: "...someone also comments on your contact's post?"
+      followed: "...someone follows you?"
       comment_on_post: "...someone comments on your post?"
       mentioned: "...you are mentioned in a post?"
       started_sharing: "...someone starts sharing with you?"
       private_message: "...you receive a private message?"
       liked: "...someone likes your post?"
       remixed: "...someone remixes your post?"
+      also_remixed: "...someone remixes a post you remixed?"
       change: "Change"
       email_awaiting_confirmation: "We have sent you an activation link to %{unconfirmed_email}. Until you follow this link and activate the new address, we will continue to use your original address %{email}."
       stream_preferences: "Stream Preferences"

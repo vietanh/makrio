@@ -11,13 +11,15 @@ app.pages.Stream = app.pages.Base.extend({
     '#new_posts_zone' : 'newPostsView'
   },
 
-  initialize : function(){
+  initialize : function(options){
     var page = window.location.pathname
-    var poll = page.search(/^\/latest/) != -1 && window.location.search.search('days_ago') == -1
+      , poll = (page.search(/^\/latest/) != -1 || page.search(/^\/feed/) != -1 ) && window.location.search.search('days_ago') == -1
+
     this.stream = this.model = new app.models.Stream([], {poller: poll})
     this.stream.preloadOrFetch()
-    this.newPostsView = new app.views.NewPostNotifier({model : this.model, page: this})
+    this.onStream = options.onStream
 
+    this.newPostsView = new app.views.NewPostNotifier({model : this.model, page: this})
     this.initSubviews()
     this.bindEvents()
   },
@@ -65,11 +67,7 @@ app.pages.Stream = app.pages.Base.extend({
   },
 
   bindEvents : function(){
-
-    
     this.stream.on("fetched", this.resetScrollSpy, this)
-
-    this.stream.on("frame:interacted", this.selectFrame, this)
     this.on("refreshScrollSpy", this.refreshScrollSpy, this)
     this.setUpMousetrap()
   },
@@ -79,14 +77,14 @@ app.pages.Stream = app.pages.Base.extend({
     this.newPostsView.unbind()
 
     this.stream.off("fetched", this.resetScrollSpy, this)
-    this.stream.off("frame:interacted", this.selectFrame, this)
     this.off("refreshScrollSpy", this.refreshScrollSpy, this)
 
-    $(window).unbind("scroll")
+    this.streamView.unbind()
+    this.interactionsView.unbind()
+    this.newPostsView.unbind()
+
+    $("body").removeData("scrollspy")
   },
-
-
-
 
   postRenderTemplate : function() {
     //after all of the child divs have been added, initialize the scroll spy
@@ -121,7 +119,7 @@ app.pages.Stream = app.pages.Base.extend({
   }, 500), //so fast scrolling doesn't crash things
 
   triggerInteractionLoad : function(evt){
-      this.selectFrame(this.stream.items.get($(evt.target).data("id")))
+    this.selectFrame(this.stream.items.get($(evt.target).data("id")))
   },
 
   refreshScrollSpy : function(){

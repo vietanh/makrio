@@ -38,14 +38,6 @@ class Person < ActiveRecord::Base
 
   before_validation :downcase_diaspora_handle
 
-  def nickname
-    name.split.first
-  end
-  
-  def downcase_diaspora_handle
-    diaspora_handle.downcase! unless diaspora_handle.blank?
-  end
-
   has_many :contacts, :dependent => :destroy # Other people's contacts for this person
   has_many :posts, :foreign_key => :author_id, :dependent => :destroy # This person's own posts
   has_many :photos, :foreign_key => :author_id, :dependent => :destroy # This person's own photos
@@ -60,6 +52,13 @@ class Person < ActiveRecord::Base
   has_many :notifications, :through => :notification_actors
 
   has_many :mentions, :dependent => :destroy
+
+  has_many :relationships, foreign_key: "follower_id", dependent: :destroy
+  has_many :reverse_relationships, foreign_key: "followed_id",
+                                   class_name: "Relationship"
+
+  has_many :followed_people, through: :relationships, source: :followed
+  has_many :followers, through: :reverse_relationships
 
   before_validation :clean_url
 
@@ -91,6 +90,26 @@ class Person < ActiveRecord::Base
   }
 
   scope :profile_tagged_with, lambda{|tag_name| joins(:profile => :tags).where(:tags => {:name => tag_name}).where('profiles.searchable IS TRUE') }
+
+  def relationship(person)
+    self.relationships.find_by_followed_id(person.id)
+  end
+
+  def follow(followed_id)
+    self.relationships.find_or_initialize_by_followed_id(followed_id)
+  end
+
+  def unfollow!(followed_id)
+    self.relationships.find(followed_id).destroy
+  end
+
+  def nickname
+    name.split.first
+  end
+  
+  def downcase_diaspora_handle
+    diaspora_handle.downcase! unless diaspora_handle.blank?
+  end
 
   def self.community_spotlight
     Person.joins(:roles).where(:roles => {:name => 'spotlight'})

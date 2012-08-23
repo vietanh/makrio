@@ -14,13 +14,19 @@ app.pages.GenericCanvas = app.pages.Base.extend({
       });
 
     this.setUpInfiniteScroll() 
+    this.initSubviews()
+  },
+
+  unbind : function() {
+    this.canvasView.unbind()
+    this.newPostsView && this.newPostsView.unbind()
   },
 
   presenter : function() {
     return(_.extend(this.defaultPresenter(), {
       title: this.pageTitle,
       description: this.pageDescription,
-      mintedAndOnStaffPicks: app.onStaffPicks && app.currentUser.minted()
+      mintedAndOnStaffPicks: app.onStaffPicks() && app.currentUser.minted()
     }))
   },
 
@@ -29,7 +35,6 @@ app.pages.GenericCanvas = app.pages.Base.extend({
     options = options || { collectionOptions: {} }
     this.stream = new app.models.Stream([], options)
     this.stream.preloadOrFetch()
-    this.initSubviews()
   },
 
   initSubviews : function(){

@@ -1,30 +1,35 @@
 <div id='post-content' style="position:static">
-   <div class='media interaction-title'> 
+   <div class='media interaction-title' style="margin-left:0;margin-bottom:20px;"> 
     <div class='img'> 
       <a href='/{{author.username}}'> {{{personImage author "small"}}}</a>
     </div>
     <div class='bd'>
-      <h2>{{author.nickname}}'s Remix 
-        <a class='btn new-btn' href="/conversations/{{conversation_id}}" class="permalink" title="Permalink"> View Remixes</a>
+      <h2>{{author.nickname}}
+        <span id="follow-btn-container"/>
+        <a class='btn new-btn' href="/conversations/{{conversation_id}}" class="permalink" title="Permalink" style="float:right;">View Remixes</a>
       </h2>
     </div>
   </div>
 
   <div id="selected_frame" />
-  </br/>
-  <h6> Topics </h6>
-  {{#each tags}}
-    <a class='topic-link' href='/tagged/{{this.name}}'> <span class="label">{{this.display_name}}</span></a>
-  {{/each}}
+  <br/>
+  <div id="share-actions" />
+
+  <br/>
+  
+  {{#if tags}}
+    <h6>Topics</h6>
+    {{#each tags}}
+      <a class='topic-link' href='/tagged/{{this.name}}'> <span class="label">{{this.display_name}}</span></a>
+    {{/each}}
+  {{/if}}
+
 
   <div id="selected_reactions" />
   <div id="selected_new_comment" />
+  
+  <br/>
 
-  <div style="margin-top:20px;">
-    <h6>Share</h6>
-    <div id="share-actions" />
-  </div>
-    <hr />
   <h6>Tags</h6>
   <form name="tagForm" class='form-inline' action="/posts/{{id}}/tags" method="post" data-remote="true">
       <input type="text" name="tag_list" value='{{tag_list}}' placeholder='add comma seperated tags'/>

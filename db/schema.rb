@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120806233708) do
+ActiveRecord::Schema.define(:version => 20120821054358) do
 
   create_table "account_deletions", :force => true do |t|
     t.string  "diaspora_handle"
@@ -192,6 +192,8 @@ ActiveRecord::Schema.define(:version => 20120806233708) do
     t.datetime "created_at",                               :null => false
     t.datetime "updated_at",                               :null => false
     t.boolean  "closed_account",        :default => false
+    t.integer  "followers_count",       :default => 0
+    t.integer  "followed_count",        :default => 0
   end
 
   add_index "people", ["diaspora_handle"], :name => "index_people_on_diaspora_handle", :unique => true
@@ -283,6 +285,7 @@ ActiveRecord::Schema.define(:version => 20120806233708) do
     t.string   "full_name",        :limit => 70
     t.boolean  "nsfw",                            :default => false
     t.string   "wallpaper"
+    t.string   "gravatar_hash"
   end
 
   add_index "profiles", ["full_name", "searchable"], :name => "index_profiles_on_full_name_and_searchable"
@@ -301,6 +304,17 @@ ActiveRecord::Schema.define(:version => 20120806233708) do
   end
 
   add_index "rails_admin_histories", ["item", "table", "month", "year"], :name => "index_rails_admin_histories"
+
+  create_table "relationships", :force => true do |t|
+    t.integer  "follower_id"
+    t.integer  "followed_id"
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
+  end
+
+  add_index "relationships", ["followed_id"], :name => "index_relationships_on_followed_id"
+  add_index "relationships", ["follower_id", "followed_id"], :name => "index_relationships_on_follower_id_and_followed_id", :unique => true
+  add_index "relationships", ["follower_id"], :name => "index_relationships_on_follower_id"
 
   create_table "roles", :force => true do |t|
     t.integer  "person_id"
